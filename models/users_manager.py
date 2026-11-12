@@ -11,21 +11,28 @@ class UserManager:
 
 
     def parse_users(self, users_data: dict[str, dict[str, str]]) -> dict[str, User]:
-        users: dict[str, User] = {}
-        
-        for k, v in users_data.items():
-            users[k] = User(
-                username=v["name"],
+        return {
+            k: User(
+                username=v["username"],
                 password=v["password"],
                 role=v["role"],
                 id=k
             )
-        
-        return users
+            for k, v in users_data.items()
+        }
+
+
+    def serialize_users(self) -> dict[str, dict[str, str]]:
+        return {
+            k: user.to_dict()
+            for k, user in self.users.items()
+        }
 
 
     def register_user(self, user: User) -> None:
         self.users[user.id] = user
+
+        self.json_handler.write_json(self.serialize_users())
 
 
     def get_user(self, username: str) -> User | None:

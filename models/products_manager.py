@@ -27,6 +27,12 @@ class ProductManager:
         return self.products[product_code]
 
 
+    def get_product_by_name(self, product_name: str) -> Product | None: 
+        for product in self.products.values():
+            if product.name == product_name:
+                return product
+
+
     def stock_product(self, product_code: str, quantity: int) -> None:
         if product_code not in self.products:
             raise InexistentProductCodeError(product_code)

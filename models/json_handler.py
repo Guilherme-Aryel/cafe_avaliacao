@@ -18,6 +18,6 @@ class JSONHandler:
                 return default
 
 
-    def write_json(self, data: Any) -> None:
+    def write_json(self, data: Any, ensure_ascii: bool = False) -> None:
         with open(self.file_path, 'w') as file:
-            json.dump(data, file, indent=4)
+            json.dump(data, file, indent=4, ensure_ascii=ensure_ascii)

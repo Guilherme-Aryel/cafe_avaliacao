@@ -1,7 +1,12 @@
 {
     "c3424ba4-95ba-4f34-8c8a-4a45962b2bbc": {
-        "name": "Guilherme Aryel",
+        "username": "Guilherme Aryel",
         "password": "123",
         "role": "admin"
+    },
+    "dc936e39-e01d-4b6e-805e-3640f98e357c": {
+        "username": "João",
+        "password": "321",
+        "role": "user"
     }
 }

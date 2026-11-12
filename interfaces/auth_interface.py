@@ -9,12 +9,19 @@ from models.users_manager import UserManager
 
 class AuthInterface(Interface):
 
-    def __init__(self, users_manager: UserManager) -> None:
+    def __init__(
+            self,
+            users_manager: UserManager,
+            user_to_update: User | None = None
+        ) -> None:
+
         super().__init__(accepted_permissions=["admin", "user"])
         
+        self.user_to_update: User | None = user_to_update
         self.users_manager = users_manager
         self.dispatch_dict: dict[str, Callable[[], Any]] = {
-            "register_user": self.register_user
+            "register_user": self.register_user,
+            "sign_in_user": self.sign_in_user
         }
 
 
@@ -41,7 +48,7 @@ class AuthInterface(Interface):
             
             if self.users_manager.authenticate(username, password):
                 print("Usuário autenticado com sucesso!")
-                return User(username, password)
+                return self.users_manager.get_user(username)
 
             while True:
                 to_continue: str = input("Algo deu errado, deseja tentar novamente?[y/n]: ")
