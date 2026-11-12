@@ -5,6 +5,7 @@ from interfaces.base import Interface
 
 from models.user import User
 from models.users_manager import UserManager
+from utils import clear_terminal
 
 
 class AuthInterface(Interface):
@@ -54,12 +55,14 @@ class AuthInterface(Interface):
                 to_continue: str = input("Algo deu errado, deseja tentar novamente?[y/n]: ")
 
                 match to_continue:
-                    case "y": break
+                    case "y": clear_terminal(); break
                     case "n":
                         if not required: return
 
                         print("Esse login é obrigatório, aperte 'y' para tentar novamente!")
                     case _: print("Opção inválida!")
+
+                print()
 
 
     def run(self) -> None:

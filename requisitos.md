@@ -12,10 +12,10 @@ O objetivo deste documento é definir quais são os requisitos básicos e necess
 definidos.
 
 ### 1.2 Escopo
-Descreva o que faz parte do sistema e, se necessário, o que está fora do escopo.
+O escopo do sistema engloba autenticação de usuários e 
 
 ### 1.3 Público-alvo
-Indique quem utilizará o sistema e quem consultará esta especificação.
+Os principais usuários do sistema serão os funcionários que o utilizarão para fazer a administração do estabelecimento e os clientes que poderam utilizá-lo para realizar comprar
 
 ### 1.4 Termos e definições
 | Termo | Definição |
@@ -26,6 +26,9 @@ Indique quem utilizará o sistema e quem consultará esta especificação.
 | Perfil | Descrição | Necessidades principais |
 |---|---|---|
 | [Perfil] | [Quem é] | [O que precisa realizar] |
+| Cliente | Quem irá comprar produtos | Usar o sistema para solicitar serviços oferecidos pela empresa |
+| Funcionário | Principal responsável pela manutenção do sistema já funcionando e em uso | Usa o sistema para administrar e atender clientes |
+| Usuário | Perfil genérico de quem usa o sistema | Usa o sistema para funções diversas |
 
 ## 3. Requisitos funcionais
 
@@ -41,14 +44,14 @@ Indique quem utilizará o sistema e quem consultará esta especificação.
 ### RF-001 — Cadastro de usuários
 - **Descrição:** O sistema deve cadastrar os usuários com base nos dados fornecidos se válidos.
 - **Prioridade:** Essencial
-- **Origem:** [Stakeholder, regra de negócio ou documento]
+- **Origem:** Usuário
 - **Critérios de aceite:**
   - Dado a entrada do usuário no sistema, quando fornecer os seus dados, então ele será registrado e persistido em um banco de dados.
 
 ### RF-002 — Login de usuários
 - **Descrição:** O sistema deve permitir que usuários possam fazer login nas suas contas cadastradas.
 - **Prioridade:** Essencial
-- **Origem:** [Stakeholder, regra de negócio ou documento]
+- **Origem:** Usuário
 - **Critérios de aceite:**
   - Dado a entrada do usuário no sistema, quando fornecer os seus dados, então ele será verificado e, se existir uma conta salva, irá entrar com aquela conta no sistema.
 
@@ -68,24 +71,31 @@ Indique quem utilizará o sistema e quem consultará esta especificação.
 
 ## 4. Regras de negócio
 
-Use identificadores `RN-001`, `RN-002`, ... para regras que restringem ou orientam o funcionamento do sistema.
-
-### RN-001 — [Nome da regra]
+### RN-000 — [Nome da regra]
 - **Regra:** [Condição que deve ser respeitada]
 - **Exemplo ou consequência:** [Como a regra afeta o comportamento]
+
+### RN-001 — Persistência de estado de valores monetários
+- **Regra:** A representação do dinheiro no sistema deve respeitar as propriedades de transação e estado que acontecem na vida real, no caso, uma abstração da realidade
+- **Exemplo ou consequência:** Dinheiro não pode ter valor negativo. Comprar um produto de valor negativo vai gerar prejuízo para o estabelecimento.
 
 ## 5. Requisitos não funcionais
 
 Descreva qualidades ou restrições mensuráveis, como segurança, desempenho, usabilidade, disponibilidade e compatibilidade. Use identificadores `RNF-001`, `RNF-002`, ...
 
-### RNF-001 — [Nome do requisito]
+### RNF-000 — [Nome do requisito]
 - **Categoria:** [Segurança / Desempenho / Usabilidade / ...]
 - **Descrição:** O sistema deve [qualidade ou restrição].
 - **Métrica ou critério de verificação:** [Como confirmar que foi atendido]
 
+### RNF-001 — Persistência de dados sensíveis
+- **Categoria:** Segurança
+- **Descrição:** Atualmente, o sistema restringe o acesso de usuários à opções de funcionários dentro do uso do próprio sistema, mas os dados ainda podem ser alterados diretamente pelo banco.
+- **Métrica ou critério de verificação:** Usuários são barrados pelo sistema se o código não for alterado diretamente, mas os dados ainda são sucetíveis à alterações diretas fora do sistema.
+
 ## 6. Interfaces e integrações
-- **Interface com o usuário:** [Telas, comandos ou canais necessários]
-- **Integrações externas:** [Serviço, dados trocados e finalidade, ou "Nenhuma"]
+- **Interface com o usuário:** Por se tratar de um CLI (Command-Line Interface) atualmente a interface de uso, tanto para clientes como funcionários é o próprio terminal.
+- **Integrações externas:** Nenhuma
 
 ## 7. Restrições e dependências
 - [Tecnologias, legislação, ambiente ou dependências que limitam a solução]
@@ -93,7 +103,7 @@ Descreva qualidades ou restrições mensuráveis, como segurança, desempenho, u
 
 ## 8. Casos de uso
 
-### UC-001 — [Nome do caso de uso]
+### UC-000 — [Nome do caso de uso]
 - **Ator:** [Perfil que inicia a ação]
 - **Pré-condições:** [O que precisa ser verdadeiro antes]
 - **Fluxo principal:**
@@ -102,6 +112,17 @@ Descreva qualidades ou restrições mensuráveis, como segurança, desempenho, u
 - **Alternativas e erros:** [Variações ou falhas esperadas]
 - **Pós-condições:** [Estado do sistema ao final]
 
+### UC-001 — Entrar no sistema
+- **Ator:** Cliente / Funcionário
+- **Pré-condições:** O sistema deve estar inicializado.
+- **Fluxo principal:**
+  1. O cliente (ou o funcionário) entra no sistema;
+  2. O sistema solicita os dados para entrar no sistema;
+  2. O usuário dá entrada nos seus dados no sistema;
+  2. O sistema verifica quem é o usuário e permite que ele entre caso exista registro dele.
+- **Alternativas e erros:** Falhas externas como ausência de python instalado pode gerar erros; o sistema incompleto etc.
+- **Pós-condições:** O cliente/funcionário poderá ter acesso as suas respectivas sessões dentro do sistema.
+
 ## 9. Critérios de aceite do sistema
 - [Condição verificável para considerar o escopo entregue]
 
@@ -109,3 +130,4 @@ Descreva qualidades ou restrições mensuráveis, como segurança, desempenho, u
 | Item | Dúvida ou decisão necessária | Responsável | Estado |
 |---|---|---|---|
 | [ID] | [Descrição] | [Pessoa ou perfil] | [Aberto / Resolvido] |
+| 001 | Registro de clientes na inicialização do sistema | Usuário | Aberto |

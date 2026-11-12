@@ -30,12 +30,39 @@ class ProductInterface(Interface):
             print(f"- {command}")
 
 
+    def get_product_code(self) -> str:
+        while True:
+            code: str = input("Enter product code: ")
+
+            if code: return code
+
+            print("Valor inválido! Digite algum valor para ser o código do produto\n")
+
+
+    def get_product_name(self) -> str:
+        while True:
+            name: str = input("Enter product name: ")
+
+            if name: return name
+
+            print("Valor inválido! Digite algum valor para ser o código do produto\n")
+
+
+    def get_product_price(self) -> float:
+        while True:
+            try:
+                return float(input("Enter product price: "))
+            except ValueError:
+                print("Valor inválido! Forneça um valor numerico\n")
+
+
     def register_product(self) -> None:
         print("Registering a new product...")
-        code: str = input("Enter product code: ")
-        name: str = input("Enter product name: ")
-        price: float = float(input("Enter product price: "))
-
+        
+        code: str = self.get_product_code()
+        name: str = self.get_product_name()
+        price: float = self.get_product_price()
+        
         product: Product = Product(
             code,
             name,

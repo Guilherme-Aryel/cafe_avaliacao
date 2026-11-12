@@ -71,7 +71,9 @@ class MainInterface(Interface):
     def run(self) -> None:
         self.current_user = self.authentication_interface.sign_in_user(required=True)
 
-        self.shop_interface.update_client(cast(User, self.current_user))
+        self.shop_interface.update_client(
+            cast(User, self.current_user)
+        )
         
         sleep(1)
         while True:
