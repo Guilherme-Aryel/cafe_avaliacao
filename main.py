@@ -28,9 +28,11 @@ class MainInterface(Interface):
     def __init__(self) -> None:
         super().__init__(accepted_permissions=["admin", "user"])
 
-        self.json_handler: JSONHandler = JSONHandler(Path("data/products.json"))
-        self.products_manager: ProductManager = ProductManager(self.json_handler)
-        self.users_manager: UserManager = UserManager()
+        self.products_json_handler: JSONHandler = JSONHandler(Path("data/products.json"))
+        self.users_json_handler: JSONHandler = JSONHandler(Path("data/users.json"))
+
+        self.products_manager: ProductManager = ProductManager(self.products_json_handler)
+        self.users_manager: UserManager = UserManager(self.users_json_handler)
 
         self.products_interface: ProductInterface = ProductInterface(self.products_manager)
         self.authentication_interface: AuthInterface = AuthInterface(self.users_manager)
@@ -61,8 +63,7 @@ class MainInterface(Interface):
 
 
     def run(self) -> None:
-        self.current_user = self.authentication_interface.register_user()
-        self.current_user.role = "admin"  # Set the first registered user as admin
+        self.current_user = self.authentication_interface.sign_in_user(required=True)
         
         sleep(1)
         while True:
@@ -85,7 +86,7 @@ class MainInterface(Interface):
                 sleep(1)
             else:
                 print("Invalid command. Please try again.")
-                input("Press Enter to continue...")  # Wait for user input before continuing
+                input("Press Enter to continue...")
 
 
 def main() -> None:

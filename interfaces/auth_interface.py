@@ -31,6 +31,30 @@ class AuthInterface(Interface):
 
         return user
 
+
+    def sign_in_user(self, required: bool = False) -> User | None:
+        print("Signing in user...")
+
+        while True:
+            username: str = input("Enter username: ")
+            password: str = input("Enter password: ")
+            
+            if self.users_manager.authenticate(username, password):
+                print("Usuário autenticado com sucesso!")
+                return User(username, password)
+
+            while True:
+                to_continue: str = input("Algo deu errado, deseja tentar novamente?[y/n]: ")
+
+                match to_continue:
+                    case "y": break
+                    case "n":
+                        if not required: return
+
+                        print("Esse login é obrigatório, aperte 'y' para tentar novamente!")
+                    case _: print("Opção inválida!")
+
+
     def run(self) -> None:
         print("-"*20, "Authentication Interface", "-"*20)
 

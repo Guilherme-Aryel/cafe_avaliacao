@@ -1,10 +1,27 @@
 from models.user import User
+from models.json_handler import JSONHandler
 
 
 class UserManager:
     
-    def __init__(self):
-        self.users: dict[str, User] = {}
+    def __init__(self, json_handler: JSONHandler) -> None:
+        self.json_handler: JSONHandler = json_handler
+        self.users_data: dict[str, dict[str, str]] = self.json_handler.read_json(default={})
+        self.users: dict[str, User] = self.parse_users(self.users_data)
+
+
+    def parse_users(self, users_data: dict[str, dict[str, str]]) -> dict[str, User]:
+        users: dict[str, User] = {}
+        
+        for k, v in users_data.items():
+            users[k] = User(
+                username=v["name"],
+                password=v["password"],
+                role=v["role"],
+                id=k
+            )
+        
+        return users
 
 
     def register_user(self, user: User) -> None:
