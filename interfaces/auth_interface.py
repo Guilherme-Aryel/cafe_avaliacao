@@ -1,0 +1,50 @@
+from collections.abc import Callable
+from typing import Any
+
+from interfaces.base import Interface
+
+from models.user import User
+from models.users_manager import UserManager
+
+
+class AuthInterface(Interface):
+
+    def __init__(self, users_manager: UserManager) -> None:
+        super().__init__(accepted_permissions=["admin", "user"])
+        
+        self.users_manager = users_manager
+        self.dispatch_dict: dict[str, Callable[[], Any]] = {
+            "register_user": self.register_user
+        }
+
+
+    def register_user(self) -> User:
+        print("Registering user...")
+
+        user = User(
+            username=input("Enter username: "),
+            password=input("Enter password: ")
+        )
+
+        self.users_manager.register_user(user)
+        print(f"Welcome, {user.username}!")
+
+        return user
+
+    def run(self) -> None:
+        print("-"*20, "Authentication Interface", "-"*20)
+
+        while True:
+            print("Available commands:")
+            for command in self.dispatch_dict.keys():
+                print(f"- {command}")
+
+            entry: str = input(">>> ")
+
+            if entry == "exit":
+                return
+
+            if entry in self.dispatch_dict:
+                self.dispatch_dict[entry]()
+            else:
+                print("Invalid command. Please try again.")
