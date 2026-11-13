@@ -1,9 +1,11 @@
 from collections.abc import Callable
-from typing import Any
+from typing import Any, cast
+from time import sleep
 
 from interfaces.base import Interface
+from interfaces.confirmation import YNConfirmationInterface
 
-from models.dataclasses.user import User
+from models.dataclasses.user import User, UserHandler
 from models.managers.users_manager import UserManager
 from utils import clear_terminal
 
@@ -13,12 +15,14 @@ class AuthInterface(Interface):
     def __init__(
             self,
             users_manager: UserManager,
-            user_to_update: User | None = None
+            user_handler: UserHandler
         ) -> None:
 
         super().__init__(accepted_permissions=["admin", "user"])
-        
-        self.user_to_update: User | None = user_to_update
+
+        self.confirmation: YNConfirmationInterface = YNConfirmationInterface("s")
+
+        self.user_handler: UserHandler = user_handler
         self.users_manager = users_manager
         self.dispatch_dict: dict[str, Callable[[], Any]] = {
             "register_user": self.register_user,
@@ -40,30 +44,57 @@ class AuthInterface(Interface):
         return user
 
 
-    def sign_in_user(self, required: bool = False) -> User | None:
+    def sign_in_user(
+            self,
+            required: bool = False,
+            register_if_not_exists: bool = False
+        ) -> None:
         print("Logando usuário...")
 
+        first_time: bool = True
+
         while True:
-            username: str = input("Nome: ")
-            password: str = input("Senha: ")
+            if first_time:
+                first_time = False
+            else:
+                clear_terminal()
+            
+            username: str = input("Digite seu nome de usuário: ")
+            password: str = input("Digite sua senha: ")
+
+            user: User | None = self.users_manager.get_user(username)
+
+            if user is None and register_if_not_exists:
+                confirmation: bool = self.confirmation.run(
+                    "Não existe um usuário cadastrado com esses dados, deseja se cadastrar?[s/n]: "
+                )
+
+                if not confirmation:
+                    print()
+                    continue
+
+                user = User(username, password)
+
+                self.users_manager.register_user(user)
+                self.user_handler.update_user(user)
+                return
             
             if self.users_manager.authenticate(username, password):
                 print("Usuário autenticado com sucesso!")
-                return self.users_manager.get_user(username)
+                self.user_handler.update_user(cast(User, user))
+                return
 
-            while True:
-                to_continue: str = input("Algo deu errado, deseja tentar novamente?[s/n]: ")
+            confirmation = self.confirmation.run(
+                "Algo deu errado, deseja tentar novamente?[s/n]: "
+            )
 
-                match to_continue:
-                    case "s": clear_terminal(); break
-
-                    case "n":
-                        if not required: return
-                        print("Esse login é obrigatório, aperte 's' para tentar novamente!")
-                    
-                    case _: print("Opção inválida!")
-
-                print()
+            if confirmation:
+                continue
+            
+            if not required:
+                return
+            
+            print("Esse login é obrigatório, aperte 's' para tentar novamente!\n")
 
 
     def run(self) -> None:
@@ -81,5 +112,7 @@ class AuthInterface(Interface):
 
             if entry in self.dispatch_dict:
                 self.dispatch_dict[entry]()
+                sleep(1)
+                clear_terminal()
             else:
                 print("Invalid command. Please try again.")

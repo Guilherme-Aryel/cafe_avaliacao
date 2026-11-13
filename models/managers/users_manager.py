@@ -1,3 +1,4 @@
+from errors.users import SoleAdminDeletionError
 from models.dataclasses.user import User
 from services.json_handler import JSONHandler
 
@@ -8,6 +9,13 @@ class UserManager:
         self.json_handler: JSONHandler = json_handler
         self.users_data: dict[str, dict[str, str]] = self.json_handler.read_json(default={})
         self.users: dict[str, User] = self.parse_users(self.users_data)
+
+
+    def count_role(self, role: str) -> int:
+        return len([
+            user for user in self.users.values()
+            if user.role == role
+        ])
 
 
     def parse_users(self, users_data: dict[str, dict[str, str]]) -> dict[str, User]:
@@ -39,8 +47,9 @@ class UserManager:
         for user in self.users.values():
             if user.username == username:
                 return user
+        
         return None
-
+    
 
     def authenticate(self, username: str, password: str) -> bool:
         user: User | None = self.get_user(username)
@@ -48,10 +57,19 @@ class UserManager:
             return True
         return False
 
+
+    def user_exists(self, username: str) -> bool:
+        return self.get_user(username) is not None
+
     
-    def remove_user(self, username: str) -> bool:
+    def remove_user(self, username: str, actor: User) -> bool:
         user: User | None = self.get_user(username)
-        if user:
-            del self.users[user.id]
-            return True
-        return False
+        
+        if not user:
+            return False
+
+        if user.role == "admin" and self.count_role("admin") == 1:
+            raise SoleAdminDeletionError(actor, user)
+
+        del self.users[user.id]
+        return True

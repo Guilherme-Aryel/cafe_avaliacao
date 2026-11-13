@@ -8,5 +8,10 @@
         "username": "João",
         "password": "321",
         "role": "user"
+    },
+    "cd0db0e2-c033-4e95-af47-e00f72d0c519": {
+        "username": "Ana",
+        "password": "321",
+        "role": "user"
     }
 }

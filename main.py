@@ -13,7 +13,7 @@ from interfaces.admin_interface import AdminInterface
 from interfaces.shop_interface import ShopInterface
 
 from models.managers.products_manager import ProductManager
-from models.dataclasses.user import User
+from models.dataclasses.user import User, UserHandler
 
 
 def validate_user_permission(
@@ -32,7 +32,7 @@ class MainInterface(Interface):
     def __init__(self) -> None:
         super().__init__(accepted_permissions=["admin", "user"])
 
-        self.current_user: User | None = None
+        self.current_user: UserHandler = UserHandler()
 
         self.products_json_handler: JSONHandler = JSONHandler(Path("data/products.json"))
         self.users_json_handler: JSONHandler = JSONHandler(Path("data/users.json"))
@@ -41,8 +41,8 @@ class MainInterface(Interface):
         self.users_manager: UserManager = UserManager(self.users_json_handler)
 
         self.products_interface: ProductInterface = ProductInterface(self.products_manager)
-        self.authentication_interface: AuthInterface = AuthInterface(self.users_manager, user_to_update=self.current_user)
-        self.admin_interface: Interface = AdminInterface(self.users_manager)
+        self.authentication_interface: AuthInterface = AuthInterface(self.users_manager, self.current_user)
+        self.admin_interface: AdminInterface = AdminInterface(self.users_manager, self.current_user)
         self.shop_interface: ShopInterface = ShopInterface(self.products_manager, self.current_user)
     
         self.interfaces: dict[str, Interface | None] = {
@@ -59,8 +59,9 @@ class MainInterface(Interface):
         print(" "*20, "The Coffee - Cafeteria ")
         print("="*80)
 
-        if self.current_user:
-            print(f"Usuário logado: {self.current_user.username} (Role: {self.current_user.role})")
+        if self.current_user.is_user_set():
+            user: User = cast(User, self.current_user.user)
+            print(f"Usuário logado: {user.username} (Role: {user.role})")
         else:
             print("Nenhum usuário logado.")
 
@@ -74,10 +75,9 @@ class MainInterface(Interface):
 
 
     def run(self) -> None:
-        self.current_user = self.authentication_interface.sign_in_user(required=True)
-
-        self.shop_interface.update_client(
-            cast(User, self.current_user)
+        self.authentication_interface.sign_in_user(
+            required=True,
+            register_if_not_exists=True
         )
         
         sleep(1)
@@ -94,7 +94,7 @@ class MainInterface(Interface):
             
             interface: Interface | None = self.interfaces.get(entry, None)
     
-            if interface and validate_user_permission(self.current_user, interface):
+            if interface and interface.validate_user_permission(cast(User, self.current_user.user)):
                 clear_terminal()
                 interface.run()
 

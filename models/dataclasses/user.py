@@ -21,3 +21,14 @@ class User:
             "password": self.password,
             "role": self.role
         }
+
+
+@dataclass
+class UserHandler:
+    user: User | None = None
+
+    def update_user(self, new_user: User) -> None:
+        self.user = new_user
+
+    def is_user_set(self) -> bool:
+        return self.user is not None

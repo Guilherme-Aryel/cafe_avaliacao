@@ -1,7 +1,7 @@
 from time import sleep
 
 from interfaces.base import Interface
-from models.dataclasses.user import User
+from models.dataclasses.user import UserHandler
 from models.managers.products_manager import ProductManager
 from models.dataclasses.product import Product
 from utils import clear_terminal
@@ -9,15 +9,11 @@ from utils import clear_terminal
 
 class ShopInterface(Interface):
 
-    def __init__(self, products_manager: ProductManager, client: User | None) -> None:
+    def __init__(self, products_manager: ProductManager, client: UserHandler) -> None:
         super().__init__(["admin", "user"])
 
-        self.client: User | None = client
+        self.client: UserHandler = client
         self.product_manager: ProductManager = products_manager
-
-
-    def update_client(self, client: User) -> None:
-        self.client = client
 
 
     def show_title(self) -> None:
@@ -26,7 +22,7 @@ class ShopInterface(Interface):
 
     def run(self) -> None:
 
-        if self.client is None:
+        if not self.client.is_user_set():
             print("Faça login em uma conta para poder fazer compras!")
             sleep(2)
             return
