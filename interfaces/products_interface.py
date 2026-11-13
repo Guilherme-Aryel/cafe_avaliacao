@@ -95,6 +95,7 @@ class ProductInterface(Interface):
             print("p - Previous")
             print("n - Next")
             print("q - Quit")
+            print("- "*20)
 
             for product in list(self.products_manager.products.values())[count:count+5]:
                 print(f"{list(self.products_manager.products.values()).index(product) + 1}. {product.code} - {product.name} ({self.products_manager.stock[product.code]}): {product.price}")
@@ -121,7 +122,22 @@ class ProductInterface(Interface):
             product: Product = self.products_manager.get_product(code)
             quantity: int = int(input(f"Enter quantity to stock for {product.name}: "))
 
-            self.products_manager.stock_product(code, quantity)
+            while True:
+                print("Deseja incrementar ou definir do zero o estoque com o valor fornecido?")
+                print("1 - incrementar\n2 - definir")
+                choice: str = input(">>> ")
+
+                match choice:
+                    case "1":
+                        self.products_manager.increase_stock(code, quantity)
+                        break
+
+                    case "2":
+                        self.products_manager.set_stock(code, quantity)
+                        break
+
+                    case _:
+                        print("Opção inválida\n")
 
             print(f"Stocked {quantity} units of {product.name}.")
         

@@ -35,7 +35,11 @@ class ShopInterface(Interface):
             sleep(1)
             clear_terminal()
             self.show_title()
+            print("('cancel' cancela a compra)")
             product_name: str = input("Digite o nome do produto: ")
+
+            if product_name == "cancel":
+                return
 
             product_to_buy: Product | None = self.product_manager.get_product_by_name(product_name)
 

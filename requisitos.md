@@ -12,7 +12,7 @@ O objetivo deste documento é definir quais são os requisitos básicos e necess
 definidos.
 
 ### 1.2 Escopo
-O escopo do sistema engloba autenticação de usuários e 
+O escopo do sistema engloba autenticação de usuários e administração de produtos no estoque.
 
 ### 1.3 Público-alvo
 Os principais usuários do sistema serão os funcionários que o utilizarão para fazer a administração do estabelecimento e os clientes que poderam utilizá-lo para realizar comprar
@@ -123,8 +123,21 @@ Descreva qualidades ou restrições mensuráveis, como segurança, desempenho, u
 - **Alternativas e erros:** Falhas externas como ausência de python instalado pode gerar erros; o sistema incompleto etc.
 - **Pós-condições:** O cliente/funcionário poderá ter acesso as suas respectivas sessões dentro do sistema.
 
+### UC-001 — Entrar no sistema
+- **Ator:** Cliente / Funcionário
+- **Pré-condições:** O sistema deve estar inicializado.
+- **Fluxo principal:**
+  1. O cliente (ou o funcionário) entra no sistema;
+  2. O sistema solicita os dados para entrar no sistema;
+  2. O usuário dá entrada nos seus dados no sistema;
+  2. O sistema verifica quem é o usuário e permite que ele entre caso exista registro dele.
+- **Alternativas e erros:** Falhas externas como ausência de python instalado pode gerar erros; o sistema incompleto etc.
+- **Pós-condições:** O cliente/funcionário poderá ter acesso as suas respectivas sessões dentro do sistema.
+
 ## 9. Critérios de aceite do sistema
-- [Condição verificável para considerar o escopo entregue]
+- Clientes conseguem escolher produtos e comprá-los pelo sistema;
+- Funcionários conseguem registrar, alterar e remover produtos do estoque;
+- Usuários conseguem se cadastrar, entrar e sair de contas.
 
 ## 10. Pendências e decisões
 | Item | Dúvida ou decisão necessária | Responsável | Estado |

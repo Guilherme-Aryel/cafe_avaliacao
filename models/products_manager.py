@@ -4,6 +4,7 @@ from models.product import Product
 from models.json_handler import JSONHandler
 from errors.product import InexistentProductCodeError
 
+
 class ProductManager:
 
     def __init__(self, json_handler: JSONHandler) -> None:
@@ -33,19 +34,31 @@ class ProductManager:
                 return product
 
 
-    def stock_product(self, product_code: str, quantity: int) -> None:
+    def update_products_db(self) -> None:
+        self.json_handler.write_json({
+            code: product.to_dict() | { "quantity" : self.stock[product.code] }
+            for code, product in self.products.items()
+        })
+
+
+    def increase_stock(self, product_code: str, quantity: int) -> None:
         if product_code not in self.products:
             raise InexistentProductCodeError(product_code)
         
         self.stock[product_code] += quantity
 
 
+    def set_stock(self, product_code: str, quantity: int) -> None:
+        if product_code not in self.products:
+            raise InexistentProductCodeError(product_code)
+        
+        self.stock[product_code] = quantity
+
+
     def register_product(self, product: Product) -> None:
         self.products[product.code] = product
-        self.json_handler.write_json({
-            code: product.to_dict()
-            for code, product in self.products.items()
-        })
+        self.set_stock(product.code, 0)
+        self.update_products_db()
 
 
     def unregister_product(self, product_code: str) -> None:
@@ -53,8 +66,6 @@ class ProductManager:
             raise InexistentProductCodeError(product_code)
         
         del self.products[product_code]
+        del self.stock[product_code]
 
-        self.json_handler.write_json({
-            code: product.to_dict()
-            for code, product in self.products.items()
-        })
+        self.update_products_db()
