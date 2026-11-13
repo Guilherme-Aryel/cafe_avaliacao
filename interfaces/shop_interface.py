@@ -1,9 +1,9 @@
 from time import sleep
 
 from interfaces.base import Interface
-from models.user import User
-from models.products_manager import ProductManager
-from models.product import Product
+from models.dataclasses.user import User
+from models.managers.products_manager import ProductManager
+from models.dataclasses.product import Product
 from utils import clear_terminal
 
 

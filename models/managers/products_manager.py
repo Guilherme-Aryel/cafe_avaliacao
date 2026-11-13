@@ -1,7 +1,7 @@
 from typing import cast
 
-from models.product import Product
-from models.json_handler import JSONHandler
+from models.dataclasses.product import Product
+from services.json_handler import JSONHandler
 from errors.product import InexistentProductCodeError
 
 
@@ -12,7 +12,12 @@ class ProductManager:
         self.products_data: dict[str, dict[str, str | float | int]] = self.json_handler.read_json(default={})
         self.products: dict[str, Product] = self.parse_products(self.products_data)
         self.stock: dict[str, int] = {code: cast(int, product["quantity"]) for code, product in self.products_data.items()}
-    
+
+
+    @property
+    def product_codes(self) -> list[str]:
+        return list(self.products.keys())
+
 
     def parse_products(self, products_data: dict[str, dict[str, str | float | int]]) -> dict[str, Product]:
         return {
@@ -61,11 +66,15 @@ class ProductManager:
         self.update_products_db()
 
 
-    def unregister_product(self, product_code: str) -> None:
+    def unregister_product(self, product_code: str) -> Product:
         if product_code not in self.products:
             raise InexistentProductCodeError(product_code)
-        
+
+        product: Product = self.products[product_code]
+
         del self.products[product_code]
         del self.stock[product_code]
 
         self.update_products_db()
+
+        return product

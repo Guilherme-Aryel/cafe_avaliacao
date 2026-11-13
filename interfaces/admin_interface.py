@@ -2,7 +2,7 @@ from collections.abc import Callable
 from typing import Any
 
 from interfaces.base import Interface
-from models.users_manager import UserManager
+from models.managers.users_manager import UserManager
 
 
 class AdminInterface(Interface):

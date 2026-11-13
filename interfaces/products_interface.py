@@ -4,8 +4,8 @@ from time import sleep
 from errors.product import InexistentProductCodeError
 from interfaces.base import Interface
 from models.money.brl_money import BRLMoney
-from models.product import Product
-from models.products_manager import ProductManager
+from models.dataclasses.product import Product
+from models.managers.products_manager import ProductManager
 from utils import clear_terminal
 
 
@@ -16,48 +16,56 @@ class ProductInterface(Interface):
 
         self.products_manager: ProductManager = products_manager
         self.command_dispatch: dict[str, Callable[[], None]] = {
-            "register": self.register_product,
-            "unregister": self.unregister_product,
-            "stock_product": self.stock_product,
-            "show": self.show_products,
-            "exit": lambda: None
+            "registrar": self.register_product,
+            "remover": self.unregister_product,
+            "estocar": self.stock_product,
+            "mostrar": self.show_products,
+            "sair": lambda: None
         }
 
 
     def show_options(self) -> None:
-        print("Available commands:")
+        print("Comandos disponíveis:")
         for command in self.command_dispatch.keys():
             print(f"- {command}")
 
 
     def get_product_code(self) -> str:
         while True:
-            code: str = input("Enter product code: ")
+            code: str = input("Digite o código do produto: ")
 
-            if code: return code
+            if not code:
+                print("Valor inválido! Digite algum valor para ser o código do produto\n")
+                continue
 
-            print("Valor inválido! Digite algum valor para ser o código do produto\n")
+            if code in self.products_manager.product_codes:
+                print("Código de produto já cadastrado!")
+                continue
+
+            return code
 
 
     def get_product_name(self) -> str:
         while True:
-            name: str = input("Enter product name: ")
+            name: str = input("Digite o nome do produto: ")
 
-            if name: return name
+            if not name:
+                print("Valor inválido! Digite algum valor para ser o código do produto\n")
+                continue
 
-            print("Valor inválido! Digite algum valor para ser o código do produto\n")
+            return name
 
 
     def get_product_price(self) -> float:
         while True:
             try:
-                return float(input("Enter product price: "))
+                return float(input("Digite o valor do produto: R$"))
             except ValueError:
-                print("Valor inválido! Forneça um valor numerico\n")
+                print("Valor inválido! Forneça um valor numerico com ou sem ponto flutuante\n")
 
 
     def register_product(self) -> None:
-        print("Registering a new product...")
+        print("Registrando novo produto...")
         
         code: str = self.get_product_code()
         name: str = self.get_product_name()
@@ -70,18 +78,37 @@ class ProductInterface(Interface):
         )
 
         self.products_manager.register_product(product)
-        print(f"Product {product.name} registered successfully!")
+        print(f"'{product.name}' foi registrado com sucesso como produto!")
 
 
     def unregister_product(self) -> None:
-        print("Unregistering a product...")
-        code: str = input("Enter product code to unregister: ")
-        try:
-            self.products_manager.unregister_product(code)
-            print(f"Product with code {code} unregistered successfully!")
-        except InexistentProductCodeError as e:
-            print(e)
+        print("Removendo produto...")
 
+        while True:
+            code: str = input("Digite o código do produto: ")
+
+            try:
+                product: Product | None = self.products_manager.get_product(code)
+            except InexistentProductCodeError as e:
+                print(e)
+                continue
+                            
+            while True:
+                confirmation: str = input(f"Deseja remover '{product.name}'?[s/n]: ")
+
+                match confirmation:
+                    case "s":
+                        self.products_manager.unregister_product(code)
+                        print(f"'{product.name}' foi removido com sucesso!")
+                        return
+
+                    case "n": break
+
+                    case _:
+                        print("Opção inválida!\n")
+
+            clear_terminal()
+    
 
     def show_products(self) -> None:
         print("Available products:")

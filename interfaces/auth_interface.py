@@ -3,8 +3,8 @@ from typing import Any
 
 from interfaces.base import Interface
 
-from models.user import User
-from models.users_manager import UserManager
+from models.dataclasses.user import User
+from models.managers.users_manager import UserManager
 from utils import clear_terminal
 
 
@@ -41,35 +41,36 @@ class AuthInterface(Interface):
 
 
     def sign_in_user(self, required: bool = False) -> User | None:
-        print("Signing in user...")
+        print("Logando usuário...")
 
         while True:
-            username: str = input("Enter username: ")
-            password: str = input("Enter password: ")
+            username: str = input("Nome: ")
+            password: str = input("Senha: ")
             
             if self.users_manager.authenticate(username, password):
                 print("Usuário autenticado com sucesso!")
                 return self.users_manager.get_user(username)
 
             while True:
-                to_continue: str = input("Algo deu errado, deseja tentar novamente?[y/n]: ")
+                to_continue: str = input("Algo deu errado, deseja tentar novamente?[s/n]: ")
 
                 match to_continue:
-                    case "y": clear_terminal(); break
+                    case "s": clear_terminal(); break
+
                     case "n":
                         if not required: return
-
-                        print("Esse login é obrigatório, aperte 'y' para tentar novamente!")
+                        print("Esse login é obrigatório, aperte 's' para tentar novamente!")
+                    
                     case _: print("Opção inválida!")
 
                 print()
 
 
     def run(self) -> None:
-        print("-"*20, "Authentication Interface", "-"*20)
+        print("- "*20 + "Autenticação" + " -"*20)
 
         while True:
-            print("Available commands:")
+            print("Comandos disponíveis:")
             for command in self.dispatch_dict.keys():
                 print(f"- {command}")
 

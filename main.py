@@ -2,8 +2,8 @@ from time import sleep
 from pathlib import Path
 from typing import cast
 
-from models.json_handler import JSONHandler
-from models.users_manager import UserManager
+from services.json_handler import JSONHandler
+from models.managers.users_manager import UserManager
 from utils import clear_terminal
 
 from interfaces.base import Interface
@@ -12,8 +12,8 @@ from interfaces.auth_interface import AuthInterface
 from interfaces.admin_interface import AdminInterface
 from interfaces.shop_interface import ShopInterface
 
-from models.products_manager import ProductManager
-from models.user import User
+from models.managers.products_manager import ProductManager
+from models.dataclasses.user import User
 
 
 def validate_user_permission(
@@ -46,26 +46,31 @@ class MainInterface(Interface):
         self.shop_interface: ShopInterface = ShopInterface(self.products_manager, self.current_user)
     
         self.interfaces: dict[str, Interface | None] = {
-            "products": self.products_interface,
-            "authentication": self.authentication_interface,
+            "produtos": self.products_interface,
+            "autenticação": self.authentication_interface,
             "admin": self.admin_interface,
-            "shop": self.shop_interface,
-            "exit": None
+            "compra": self.shop_interface,
+            "sair": None
         }
     
 
     def show_title(self) -> None:
-        print("-"*20, "The Coffee", "-"*20)
+        print("="*80)
+        print(" "*20, "The Coffee - Cafeteria ")
+        print("="*80)
+
         if self.current_user:
-            print(f"Current user: {self.current_user.username} (Role: {self.current_user.role})")
+            print(f"Usuário logado: {self.current_user.username} (Role: {self.current_user.role})")
         else:
-            print("No user is currently logged in.")
+            print("Nenhum usuário logado.")
 
 
     def show_available_commands(self) -> None:
-        print("Available commands:")
+        print("- "*40)
+        print("Comandos disponíveis:")
         for command in self.interfaces.keys():
             print(f"- {command}")
+        print("- "*40)
 
 
     def run(self) -> None:
@@ -95,8 +100,8 @@ class MainInterface(Interface):
 
                 sleep(1)
             else:
-                print("Invalid command. Please try again.")
-                input("Press Enter to continue...")
+                print("Comando inválido! Tente novamente")
+                input("Pressione Enter para continuar...")
 
 
 def main() -> None:

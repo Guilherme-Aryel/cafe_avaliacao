@@ -1,5 +1,5 @@
-from models.user import User
-from models.json_handler import JSONHandler
+from models.dataclasses.user import User
+from services.json_handler import JSONHandler
 
 
 class UserManager:
