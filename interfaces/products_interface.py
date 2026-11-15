@@ -17,6 +17,7 @@ class ProductInterface(Interface):
         self.products_manager: ProductManager = products_manager
         self.command_dispatch: dict[str, Callable[[], None]] = {
             "registrar": self.register_product,
+            "editar": self.change_product,
             "remover": self.unregister_product,
             "estocar": self.stock_product,
             "mostrar": self.show_products,
@@ -63,6 +64,54 @@ class ProductInterface(Interface):
             except ValueError:
                 print("Valor inválido! Forneça um valor numerico com ou sem ponto flutuante\n")
 
+    
+    def change_product(self) -> None:
+        while True:
+            product_code: str = input("Digite o código do produto: ")
+            
+            if product_code == "cancel":
+                return
+            
+            try:
+                self.products_manager.get_product(product_code)
+            except InexistentProductCodeError:
+                print("Código de produto inválido!\n")
+                continue
+            
+            while True:
+                print("1. Alterar código do produto;")
+                print("2. Alterar nome do produto;")
+                print("3. Alterar valor do produto;")
+                print("4. Sair")
+                
+                choice: str = input(">>> ")
+                
+                match choice:
+                    case "1":
+                        self.products_manager.update_product(
+                            product_code,
+                            updated_code=self.get_product_code()
+                        )
+                    
+                    case "2":
+                        self.products_manager.update_product(
+                            product_code,
+                            updated_name=self.get_product_name()
+                        )
+                    
+                    case "3":
+                        self.products_manager.update_product(
+                            product_code,
+                            updated_price=BRLMoney.parse_from_float(
+                                self.get_product_price()
+                            )
+                        )
+                    
+                    case "4": break
+                    
+                    case _:
+                        print("Opção inválida!")
+    
 
     def register_product(self) -> None:
         print("Registrando novo produto...")

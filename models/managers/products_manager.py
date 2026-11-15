@@ -3,6 +3,7 @@ from typing import cast
 from models.dataclasses.product import Product
 from services.json_handler import JSONHandler
 from errors.product import InexistentProductCodeError
+from models.money.brl_money import BRLMoney
 
 
 class ProductManager:
@@ -37,6 +38,36 @@ class ProductManager:
         for product in self.products.values():
             if product.name == product_name:
                 return product
+    
+    
+    def update_product(
+        self,
+        product_code: str,
+        updated_code: str | None = None,
+        updated_name: str | None = None,
+        updated_price: BRLMoney | None = None,
+        updated_quantity: int | None = None
+    ) -> None:
+        
+        product: Product | None = self.get_product(product_code)
+        
+        if updated_code in self.products:
+            raise KeyError("attempt to ")
+        
+        if updated_code is not None:
+            self.stock[updated_code] = self.stock.pop(product_code)
+            self.products[updated_code] = self.products.pop(product_code)
+        
+        product.update_values(
+            updated_code,
+            updated_name,
+            updated_price
+        )
+        
+        if updated_quantity is not None:
+            self.stock[product_code] = updated_quantity
+        
+        self.update_products_db()
 
 
     def update_products_db(self) -> None:

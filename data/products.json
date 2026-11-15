@@ -1,1 +1,8 @@
-{}
+{
+    "321": {
+        "code": "321",
+        "name": "Café Expresso",
+        "price": 12.5,
+        "quantity": 0
+    }
+}

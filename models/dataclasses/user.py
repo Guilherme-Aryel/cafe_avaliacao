@@ -2,10 +2,12 @@ import uuid
 
 from dataclasses import dataclass, field
 
+from models.dataclasses.email import Email
 
 @dataclass
 class User:
     username: str
+    email: Email
     password: str
     role: str = field(
         default="user"
@@ -29,6 +31,9 @@ class UserHandler:
 
     def update_user(self, new_user: User) -> None:
         self.user = new_user
+    
+    def logout(self) -> None:
+        self.user = None
 
     def is_user_set(self) -> bool:
         return self.user is not None

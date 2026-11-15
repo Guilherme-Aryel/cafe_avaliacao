@@ -16,18 +16,6 @@ from models.managers.products_manager import ProductManager
 from models.dataclasses.user import User, UserHandler
 
 
-def validate_user_permission(
-    current_user: User | None,
-    interface: Interface
-) -> bool:
-    if current_user is not None and current_user.role in interface.accepted_permissions:
-        print(f"Access granted to {interface.__class__.__name__}.")
-        return True
-    
-    print(f"Access denied to {interface.__class__.__name__}.")
-    return False
-
-
 class MainInterface(Interface):
     def __init__(self) -> None:
         super().__init__(accepted_permissions=["admin", "user"])
@@ -83,13 +71,13 @@ class MainInterface(Interface):
         sleep(1)
         while True:
             clear_terminal()
-
+            
             self.show_title()
             self.show_available_commands()
 
             entry: str = input(">>> ")
     
-            if entry == "exit":
+            if entry == "sair":
                 return
             
             interface: Interface | None = self.interfaces.get(entry, None)

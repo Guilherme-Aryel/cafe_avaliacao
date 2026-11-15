@@ -6,7 +6,10 @@ from interfaces.base import Interface
 from interfaces.confirmation import YNConfirmationInterface
 
 from models.dataclasses.user import User, UserHandler
+from models.dataclasses.email import Email
 from models.managers.users_manager import UserManager
+
+from errors.email import InvalidEmailError
 from utils import clear_terminal
 
 
@@ -25,8 +28,10 @@ class AuthInterface(Interface):
         self.user_handler: UserHandler = user_handler
         self.users_manager = users_manager
         self.dispatch_dict: dict[str, Callable[[], Any]] = {
-            "register_user": self.register_user,
-            "sign_in_user": self.sign_in_user
+            "cadastrar": self.register_user,
+            "login": self.sign_in_user,
+            "logout": self.sign_out_user,
+            "sair": lambda: None
         }
 
 
@@ -34,14 +39,47 @@ class AuthInterface(Interface):
         print("Registering user...")
 
         user = User(
-            username=input("Enter username: "),
-            password=input("Enter password: ")
+            username=self.get_username(),
+            email=self.get_email(),
+            password=self.get_password()
         )
 
         self.users_manager.register_user(user)
-        print(f"Welcome, {user.username}!")
+        print(f"Bem-vindo, {user.username}!")
 
         return user
+    
+    
+    def get_email(self) -> Email:
+        while True:
+            address: str = input("Digite o seu email: ")
+            
+            try:
+                return Email(address)
+            except InvalidEmailError:
+                print("Email inválido!\n")
+    
+    
+    def get_username(self) -> str:
+        while True:
+            username: str = input("Digite um nome de usuário: ")
+            
+            if not username:
+                print("Não deixe esse campo vazio\n")
+                continue
+            
+            return username
+    
+    
+    def get_password(self) -> str:
+        while True:
+            password: str = input("Digite uma senha: ")
+            
+            if not password:
+                print("Não deixe esse campo vazio\n")
+                continue
+            
+            return password
 
 
     def sign_in_user(
@@ -60,6 +98,7 @@ class AuthInterface(Interface):
                 clear_terminal()
             
             username: str = input("Digite seu nome de usuário: ")
+            email: Email = self.get_email()
             password: str = input("Digite sua senha: ")
 
             user: User | None = self.users_manager.get_user(username)
@@ -73,7 +112,7 @@ class AuthInterface(Interface):
                     print()
                     continue
 
-                user = User(username, password)
+                user = User(username, email, password)
 
                 self.users_manager.register_user(user)
                 self.user_handler.update_user(user)
@@ -95,7 +134,22 @@ class AuthInterface(Interface):
                 return
             
             print("Esse login é obrigatório, aperte 's' para tentar novamente!\n")
-
+    
+    
+    def sign_out_user(self) -> None:
+        confirmation: bool = self.confirmation.run(
+            "Deseja sair da sua conta?[s/n]: "
+        )
+        
+        if not confirmation:
+            return
+        
+        self.user_handler.logout()
+        print("Usuário deslogado com sucesso!")
+    
+    
+    def validate_user_permission(self, user: User) -> bool:
+        return True
 
     def run(self) -> None:
         print("- "*20 + "Autenticação" + " -"*20)
@@ -107,7 +161,7 @@ class AuthInterface(Interface):
 
             entry: str = input(">>> ")
 
-            if entry == "exit":
+            if entry == "sair":
                 return
 
             if entry in self.dispatch_dict:
