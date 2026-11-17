@@ -1,5 +1,5 @@
 from models.managers.products_manager import ProductManager, InexistentProductCodeError
-from interfaces.products.product_getters import ProductGetters
+from interfaces.products.sub.product_getters import ProductGetters
 from interfaces.base import SimpleInterface
 from models.money.brl_money import BRLMoney
 
