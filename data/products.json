@@ -4,5 +4,23 @@
         "name": "Café Expresso",
         "price": 12.5,
         "quantity": 0
+    },
+    "123": {
+        "code": "123",
+        "name": "Pera",
+        "price": 1.0,
+        "quantity": 0
+    },
+    "432": {
+        "code": "432",
+        "name": "Batata",
+        "price": 12.0,
+        "quantity": 0
+    },
+    "543": {
+        "code": "543",
+        "name": "Maçã",
+        "price": 500.0,
+        "quantity": 0
     }
 }

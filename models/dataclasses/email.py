@@ -1,15 +1,7 @@
 from dataclasses import dataclass
 from typing import ClassVar
 
-from errors.email import LongEmailError
-
-
-class InvalidEmailFormatError(ValueError):
-    """Levantada quando o formato básico do e-mail é inválido."""
-
-    def __init__(self, address: str, message: str = "Invalid email format.") -> None:
-        self.address: str = address
-        super().__init__(message)
+from errors.email import LongEmailError, InvalidEmailFormatError
 
 
 @dataclass(frozen=True)

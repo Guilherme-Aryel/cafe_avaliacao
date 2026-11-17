@@ -1,17 +1,20 @@
 {
-    "c3424ba4-95ba-4f34-8c8a-4a45962b2bbc": {
-        "username": "Guilherme Aryel",
-        "password": "123",
-        "role": "admin"
-    },
-    "dc936e39-e01d-4b6e-805e-3640f98e357c": {
-        "username": "João",
-        "password": "321",
-        "role": "user"
-    },
-    "cd0db0e2-c033-4e95-af47-e00f72d0c519": {
-        "username": "Ana",
-        "password": "321",
-        "role": "user"
-    }
+  "c3424ba4-95ba-4f34-8c8a-4a45962b2bbc": {
+    "username": "Guilherme Aryel",
+    "email": "guilherme.aryel@gmail.com",
+    "password": "123",
+    "role": "admin"
+  },
+  "dc936e39-e01d-4b6e-805e-3640f98e357c": {
+    "username": "João",
+    "email": "joao.pedro@gmail.com",
+    "password": "321",
+    "role": "user"
+  },
+  "cd0db0e2-c033-4e95-af47-e00f72d0c519": {
+    "username": "Ana",
+    "email": "ana.rosa@gmail.com",
+    "password": "321",
+    "role": "user"
+  }
 }

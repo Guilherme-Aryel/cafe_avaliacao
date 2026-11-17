@@ -5,7 +5,13 @@ from typing import Any
 from models.dataclasses.user import User
 
 
-class Interface(ABC):
+class SimpleInterface(ABC):
+    
+    @abstractmethod
+    def run(self) -> None:
+        raise NotImplementedError("Subclasses must implement the run method.")
+
+class Interface(SimpleInterface):
 
     def __init__(self, accepted_permissions: list[str]) -> None:
         self.accepted_permissions: list[str] = accepted_permissions
@@ -25,9 +31,3 @@ class Interface(ABC):
         print("Available commands:")
         for command in self.dispatch_dict.keys():
             print(f"- {command}")
-        print("- exit")
-
-    
-    @abstractmethod
-    def run(self) -> None:
-        raise NotImplementedError("Subclasses must implement the run method.")

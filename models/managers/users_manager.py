@@ -1,5 +1,6 @@
 from errors.users import SoleAdminDeletionError
 from models.dataclasses.user import User
+from models.dataclasses.email import Email
 from services.json_handler import JSONHandler
 
 
@@ -22,6 +23,7 @@ class UserManager:
         return {
             k: User(
                 username=v["username"],
+                email=Email(v["email"]),
                 password=v["password"],
                 role=v["role"],
                 id=k

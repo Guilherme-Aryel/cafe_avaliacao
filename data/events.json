@@ -1,0 +1,42 @@
+{
+    "c3424ba4-95ba-4f34-8c8a-4a45962b2bbc": {
+        "2026-11-16 21:41:17": {
+            "type": "success_to_sign_in",
+            "message": "Alguém conseguim logar na sua conta."
+        },
+        "2026-11-16 21:42:32": {
+            "type": "success_to_sign_in",
+            "message": "'Ana' conseguiu logar na sua conta."
+        },
+        "2026-11-16 23:02:05": {
+            "type": "success_to_sign_in",
+            "message": "Alguém conseguim logar na sua conta."
+        },
+        "2026-11-16 23:05:20": {
+            "type": "success_to_sign_in",
+            "message": "Alguém conseguim logar na sua conta."
+        },
+        "2026-11-16 23:06:00": {
+            "type": "success_to_sign_in",
+            "message": "Alguém conseguim logar na sua conta."
+        },
+        "2026-11-16 23:08:59": {
+            "type": "success_to_sign_in",
+            "message": "'Ana' conseguiu logar na sua conta."
+        },
+        "2026-11-16 23:17:17": {
+            "type": "success_to_sign_in",
+            "message": "Alguém conseguim logar na sua conta."
+        }
+    },
+    "cd0db0e2-c033-4e95-af47-e00f72d0c519": {
+        "2026-11-16 21:42:08": {
+            "type": "success_to_sign_in",
+            "message": "'Guilherme Aryel' conseguiu logar na sua conta."
+        },
+        "2026-11-16 23:07:35": {
+            "type": "success_to_sign_in",
+            "message": "'Guilherme Aryel' conseguiu logar na sua conta."
+        }
+    }
+}

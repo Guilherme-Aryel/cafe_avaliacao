@@ -8,9 +8,11 @@ from interfaces.confirmation import YNConfirmationInterface
 from models.dataclasses.user import User, UserHandler
 from models.dataclasses.email import Email
 from models.managers.users_manager import UserManager
+from models.events_handler import EventsHandler
 
 from errors.email import InvalidEmailError
 from utils import clear_terminal
+from getpass import getpass
 
 
 class AuthInterface(Interface):
@@ -18,7 +20,8 @@ class AuthInterface(Interface):
     def __init__(
             self,
             users_manager: UserManager,
-            user_handler: UserHandler
+            user_handler: UserHandler,
+            events_handler: EventsHandler
         ) -> None:
 
         super().__init__(accepted_permissions=["admin", "user"])
@@ -27,6 +30,7 @@ class AuthInterface(Interface):
 
         self.user_handler: UserHandler = user_handler
         self.users_manager = users_manager
+        self.events_handler: EventsHandler = events_handler
         self.dispatch_dict: dict[str, Callable[[], Any]] = {
             "cadastrar": self.register_user,
             "login": self.sign_in_user,
@@ -73,7 +77,10 @@ class AuthInterface(Interface):
     
     def get_password(self) -> str:
         while True:
-            password: str = input("Digite uma senha: ")
+            password: str = getpass(
+                prompt="Digite uma senha: ",
+                echo_char="*"
+            )
             
             if not password:
                 print("Não deixe esse campo vazio\n")
@@ -97,31 +104,61 @@ class AuthInterface(Interface):
             else:
                 clear_terminal()
             
-            username: str = input("Digite seu nome de usuário: ")
+            username: str = self.get_username()
             email: Email = self.get_email()
-            password: str = input("Digite sua senha: ")
+            password: str = self.get_password()
 
             user: User | None = self.users_manager.get_user(username)
 
-            if user is None and register_if_not_exists:
-                confirmation: bool = self.confirmation.run(
-                    "Não existe um usuário cadastrado com esses dados, deseja se cadastrar?[s/n]: "
+            if user is None:
+                if register_if_not_exists:
+                    confirmation: bool = self.confirmation.run(
+                        "Não existe um usuário cadastrado com esses dados, deseja se cadastrar?[s/n]: "
+                    )
+
+                    if not confirmation:
+                        print()
+                        continue
+
+                    user = User(username, email, password)
+
+                    self.users_manager.register_user(user)
+                    self.user_handler.update_user(user)
+                    return
+                
+                print("Usuário não encontrado!")
+                sleep(2)
+                continue
+
+            confirmation: bool = self.confirmation.run(
+                "Confirma os dados inseridos?[s/n]:"
+            )
+            
+            if not confirmation:
+                continue
+            
+            if self.users_manager.authenticate(username, password):
+                actor: User | None = self.user_handler.user
+                
+                self.events_handler.new_event(
+                    user.id,
+                    "success_to_sign_in",
+                    "Alguém conseguim logar na sua conta."
+                    if actor is None else
+                    f"'{actor.username}' conseguiu logar na sua conta."
                 )
-
-                if not confirmation:
-                    print()
-                    continue
-
-                user = User(username, email, password)
-
-                self.users_manager.register_user(user)
+                
+                print("Usuário autenticado com sucesso!")
                 self.user_handler.update_user(user)
                 return
             
-            if self.users_manager.authenticate(username, password):
-                print("Usuário autenticado com sucesso!")
-                self.user_handler.update_user(cast(User, user))
-                return
+            current_user: User = cast(User, self.user_handler.user)          
+            
+            self.events_handler.new_event(
+                current_user.id,
+                "attempt_to_sign_in",
+                f"'{current_user.username}' tentou logar na sua conta."
+            )
 
             confirmation = self.confirmation.run(
                 "Algo deu errado, deseja tentar novamente?[s/n]: "
